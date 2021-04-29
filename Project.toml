@@ -1,0 +1,13 @@
+name = "KMarkovGenSeq"
+uuid = "63f4a4c7-ea5b-47e9-a503-370b868e2ddb"
+authors = ["suyaoIndigo <j.c.f.gauss@sjtu.edu.cn> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1.6.1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
