@@ -1,10 +1,8 @@
 module KMarkovGenSeq
 
-using FASTX, CUDA, LinearAlgebra, TimerOutputs
+using FASTX, CUDA, LinearAlgebra
 
 export count_freq!, db_freq, query_freq, query_freq_cup, to
-
-const to = TimerOutput()
 
 function count_freq!(cnt::AbstractVector, seq::AbstractVector{UInt8}, len)
     mask = typemax(UInt) >> (64 - 2 * len)

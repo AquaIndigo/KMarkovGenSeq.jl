@@ -2,8 +2,7 @@ using KMarkovGenSeq
 using Test
 
 @testset "counting test" begin
-    ispath("data/dummy_genome") || mkdir("data/dummy_genome")
-    open("data/dummy_genome/test_genome.fna", "w") do io
+    open("test_genome.fna", "w") do io
         write(io, """
         >seq1| This is a dummy ref seq 
         TACTGTACTTTATCAACGGGTTTACTTGTGAATAAGGCGTAAAAATCAACTATGTTATCCACAATAGATT
@@ -36,9 +35,9 @@ using Test
     db_freq2[isnan.(db_freq2)] .= 10
     db_freq2[isinf.(db_freq2)] .= 10 
 
-    desc, db_freq1 = KMarkovGenSeq.db_freq(["data/dummy_genome/test_genome.fna"], 2)
+    desc, db_freq1 = KMarkovGenSeq.db_freq(["test_genome.fna"], 2)
     
     @test db_freq2 == db_freq1
 
-    rm("data/dummy_genome/test_genome.fna", recursive=true)
+    rm("test_genome.fna")
 end
