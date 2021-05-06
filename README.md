@@ -12,9 +12,9 @@ You should run the package with a Julia at version 1.6
 To get started, you can clone this repo and start your julia repl by
 
 ```bash
-$ git clone https://github.com/AquaIndigo/JLSponge.jl.git
+$ git clone https://github.com/AquaIndigo/KMarkovGenSeq.jl.git
 
-$ cd JLSponge
+$ cd KMarkovGenSeq.jl
 
 $ julia
 ```
