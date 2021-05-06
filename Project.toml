@@ -10,7 +10,6 @@ FASTX = "c2308a5c-f048-11e8-3e8a-31650f418d12"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 ProfileView = "c46f51b8-102a-5cf2-8d2c-8597cb0e0da7"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
-TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 
 [compat]
 julia = "1.6.1"

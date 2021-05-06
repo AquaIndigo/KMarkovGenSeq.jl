@@ -40,5 +40,5 @@ using Test
     
     @test db_freq2 == db_freq1
 
-    rm("data/dummy_genome", recursive=true)
+    rm("data/dummy_genome/test_genome.fna", recursive=true)
 end

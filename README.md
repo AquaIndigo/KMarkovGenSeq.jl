@@ -7,6 +7,17 @@
 
 ## Usage
 
+You should run the package with a Julia at version 1.6
+
+To get started, you can clone this repo and start your julia repl by
+
+```bash
+$ git clone https://github.com/AquaIndigo/JLSponge.jl.git
+
+$ cd JLSponge
+
+$ julia
+```
 
 ```julia
 query_freq_cup("data/reads.fa", "data/genomes", 6)
