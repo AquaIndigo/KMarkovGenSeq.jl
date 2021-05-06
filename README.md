@@ -22,7 +22,9 @@ $ julia
 In julia repl, you should first activate the environment:
 ```julia
 (press ]) pkg> activate .
+
 pkg> instantiate
+
 (press backspace) julia> using KMarkovGenSeq
 
 julia> query_file = ...# (the seqs you want to query)
