@@ -42,6 +42,3 @@ using Test
 
     rm("data/dummy_genome", recursive=true)
 end
-
-query_freq_cup("data/reads.fa", "data/genomes", 6)
-
