@@ -2,7 +2,7 @@ module KMarkovGenSeq
 
 using FASTX, CUDA, LinearAlgebra
 
-export count_freq!, db_freq, query_freq, query_freq_cup, to
+export count_freq!, db_freq, query_freq, query_freq_cup
 
 function count_freq!(cnt::AbstractVector, seq::AbstractVector{UInt8}, len)
     mask = typemax(UInt) >> (64 - 2 * len)
@@ -44,33 +44,71 @@ function db_freq(dbseqs, len)
 
         close(reader)
     end
-    res .= .-log.(res) # if 0, gives inf; if NaN, gives NaN
+    res .= .-log.(res) # if 0, gives -inf; if NaN, gives NaN
     res[isnan.(res)] .= 10 # treat inf and NaN as 10
     res[isinf.(res)] .= 10 
     descriptions, res
 end
+
+
+function query_freq_cup(query_seqs, dbseq_dir, len, out_file=nothing)
+    map = zeros(UInt8, 127)
+    map[['A', 'G', 'C', 'T'] .|> UInt8] .= [0x0, 0x1, 0x2, 0x3] 
+
+    query_freqs_h = zeros(Float32, 4 ^ (len + 1), 100, 2)
+   
+    dbseqs = dbseq_dir * "/" .* readdir(dbseq_dir)
+    descriptions, db_freq_h = db_freq(dbseqs, len)
+    
+    product_h = zeros(Float32, 100, length(dbseqs), 2)
+
+    reader = open(FASTA.Reader, query_seqs)
+    total_query = 0
+    
+    cls_res = Int[]
+    io = !isnothing(out_file) ? open(joinpath("output/", out_file), "w") : nothing
+    while !eof(reader)
+        cnt = 0
+        for idx in 1:100
+            eof(reader) && break
+
+            record = FASTA.Record()
+            read!(reader, record)
+            @inbounds @simd for i in record.sequence
+                record.data[i] = map[record.data[i]]
+            end
+            count_freq!(@view(query_freqs_h[:, idx, 1]), @view(record.data[record.sequence]), len)
+
+            @inbounds @simd for i in record.sequence
+                record.data[i] = 0x3 - record.data[i]
+            end
+            count_freq!(@view(query_freqs_h[:, idx, 2]), @view(record.data[record.sequence |> reverse]), len)
+
+            cnt += 1
+        end
+
+        # @time BLAS.gemm!('T', 'N', 1.0f0, query_freqs_h, db_freq_h, 0.0f0, product_h)
+        mul!(@view(product_h[:, :, 1]), @view(query_freqs_h[:, :, 1])', db_freq_h)
+        mul!(@view(product_h[:, :, 2]), @view(query_freqs_h[:, :, 2])', db_freq_h)        
+
+        argmin_score = argmin(product_h, dims=(2, 3))
+
+        for i in 1:cnt
+            !isnothing(io) && println(io, i + total_query, "\t", descriptions[argmin_score[i][2]])
+            push!(cls_res, argmin_score[i][2])
+        end
+        total_query += cnt
+    end
+    !isnothing(io) && close(io)
+    total_query, cls_res
+end
+
 
 """
 calculate C = A' * B
 dims: m×n = (p×m)'p×n
 """
 
-function cu_mat_mul!(C::CuMatrix, A::CuMatrix, B::CuMatrix)
-    handle = CUBLAS.cublasCreate()
-    row_A, col_A = size(A)
-    row_B, col_B = size(B)
-    CUBLAS.cublasSgemm_v2(
-        handle, 
-        CUBLAS.CUBLAS_OP_T,
-        CUBLAS.CUBLAS_OP_N,
-        col_A, col_B, row_B,
-        1.0,
-        A, row_A,
-        B, row_B,
-        0.0,
-        C, col_A
-    )
-end
 
 function query_freq(query_seqs, dbseq_dir, len)
     batch_size = 100
@@ -125,46 +163,21 @@ function query_freq(query_seqs, dbseq_dir, len)
     CUDA.unsafe_free!(db_freq_d)
 end
 
-function query_freq_cup(query_seqs, dbseq_dir, len)
-    map = zeros(UInt8, 127)
-    map[['A', 'G', 'C', 'T'] .|> UInt8] .= [0x0, 0x1, 0x2, 0x3] 
-
-    query_freqs_h = zeros(Float32, 4 ^ (len + 1), 100)
-   
-    dbseqs = dbseq_dir * "/" .* readdir(dbseq_dir)
-    descriptions, db_freq_h = db_freq(dbseqs, len)
-    
-    product_h = zeros(Float32, 100, length(dbseqs))
-
-    reader = open(FASTA.Reader, query_seqs)
-    total_query = 0
-    io = open("output/res.txt", "w")
-    while !eof(reader)
-        cnt = 0
-        for idx in 1:100
-            eof(reader) && break
-
-            record = FASTA.Record()
-            read!(reader, record)
-            @inbounds @simd for i in record.sequence
-                record.data[i] = map[record.data[i]]
-            end
-
-            count_freq!(@view(query_freqs_h[:, idx]), @view(record.data[record.sequence]), len)
-            cnt += 1
-        end
-
-        # @time BLAS.gemm!('T', 'N', 1.0f0, query_freqs_h, db_freq_h, 0.0f0, product_h)
-        mul!(product_h, query_freqs_h', db_freq_h)
-
-        argmin_score = argmin(product_h, dims=2)
-
-        for i in 1:cnt
-            println(io, i + total_query, "\t", descriptions[argmin_score[i][2]])
-        end
-        total_query += cnt
-    end
-    close(io)
+function cu_mat_mul!(C::CuMatrix, A::CuMatrix, B::CuMatrix)
+    handle = CUBLAS.cublasCreate()
+    row_A, col_A = size(A)
+    row_B, col_B = size(B)
+    CUBLAS.cublasSgemm_v2(
+        handle, 
+        CUBLAS.CUBLAS_OP_T,
+        CUBLAS.CUBLAS_OP_N,
+        col_A, col_B, row_B,
+        1.0,
+        A, row_A,
+        B, row_B,
+        0.0,
+        C, col_A
+    )
 end
 
 end
