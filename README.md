@@ -9,7 +9,7 @@
 
 You should run the package with a Julia at version 1.6
 
-To get started, you can clone this repo and start your julia repl by
+To get started, you can clone this repo and start your julia REPL by
 
 ```bash
 $ git clone https://github.com/AquaIndigo/KMarkovGenSeq.jl.git
@@ -22,14 +22,22 @@ $ julia
 In julia repl, you should first activate the environment:
 ```julia
 (press ]) pkg> activate .
+
 pkg> instantiate
+
 (press backspace) julia> using KMarkovGenSeq
 
 julia> query_file = ...# (the seqs you want to query)
 
 julia> db_dir = ...# (the directory containing database seqs)
 
-julia> query_freq_cup("data/reads.fa", "data/genomes", 6)
+julia> out_file = ...# (the output file name)
+
+julia> query_freq_cup(query_file, db_dir, 6, out_file)
 ```
 
-Then the output file should in `output/res.txt`
+Then the output file should in `output/out_file`, if `out_file` is not given,
+no output will be created!
+
+And the function returns the number of sequences queried and 
+the classification results.
