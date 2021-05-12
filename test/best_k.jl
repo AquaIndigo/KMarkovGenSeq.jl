@@ -22,8 +22,8 @@ function main()
     gt_cls = ground_truth_classification()
     len = gt_cls |> length
     best_k, best_acc = 0, 0
-    for k in 3:9
-        _, pred_cls = query_freq_cup("data/test.fa", "data/genomes", k)
+    for k in 3:7
+        _, pred_cls, _ = query_freq("data/test.fa", "data/genomes", k, "res.txt", false)
         acc = sum(gt_cls[i] == pred_cls[i] for i in 1:len)
         if acc > best_acc
             best_acc = acc

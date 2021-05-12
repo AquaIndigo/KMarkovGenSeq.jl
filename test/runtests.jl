@@ -39,7 +39,9 @@ using Test
 
     desc, db_freq1 = KMarkovGenSeq.db_freq(["test_genome.fna"], 2)
     
-    @test db_freq2 == db_freq1
+    @test db_freq2 == db_freq1[:, :, 1]
 
     rm("test_genome.fna")
 end
+
+query_freq("data/reads.fa", "data/genomes/", 3, "res.txt", false)

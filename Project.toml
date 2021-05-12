@@ -9,7 +9,6 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 FASTX = "c2308a5c-f048-11e8-3e8a-31650f418d12"
 GRUtils = "0337cf30-a0fd-11e9-31db-a79914c9d7ac"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-ProfileView = "c46f51b8-102a-5cf2-8d2c-8597cb0e0da7"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 
 [compat]
