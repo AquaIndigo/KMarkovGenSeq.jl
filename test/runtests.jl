@@ -43,5 +43,3 @@ using Test
 
     rm("test_genome.fna")
 end
-
-query_freq("data/reads.fa", "data/genomes/", 3, "res.txt", false)
