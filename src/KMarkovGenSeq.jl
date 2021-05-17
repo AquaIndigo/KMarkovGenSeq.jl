@@ -1,27 +1,34 @@
 module KMarkovGenSeq
 
-using FASTX, CUDA, LinearAlgebra
+using FASTX, LinearAlgebra
+import CUDA: copyto!, CuMatrix, CUBLAS
+import CUDA
 
-export count_freq!, db_freq, query_freq, query_freq_cup
+export count_freq!, db_freq, query_freq
 
 function count_freq!(cnt::AbstractVector, seq::AbstractVector{UInt8}, len)
     mask = typemax(UInt) >> (64 - 2 * len)
     len += 1
     idx = UInt(0)
+    flg = 0
     for i in 1:len-1
         @inbounds idx += seq[i]
+        (seq[i] == 4) && (flg = len)
         idx <<= 2
+        flg -= 1
     end
+    
     for num in @view(seq[len:end])
-        idx += num
-        @inbounds cnt[idx + 1] += 1
+        (num != 0x4) ? (idx += num) : (flg = len)
+        (flg <= 0) && (@inbounds cnt[idx + 1] += 1)
+        flg -= 1
         idx &= mask
         idx <<= 2
     end
 end
 
 function db_freq(dbseqs, len)
-    map = zeros(UInt8, 127)
+    map = fill(0x4, 127)
     map[['A', 'G', 'C', 'T'] .|> UInt8] .= [0x0, 0x1, 0x2, 0x3] 
     map[['a', 'g', 'c', 't'] .|> UInt8] .= [0x0, 0x1, 0x2, 0x3]
     res = zeros(Float32, 4 ^ (len + 1), length(dbseqs), 2)
@@ -40,7 +47,7 @@ function db_freq(dbseqs, len)
         count_freq!(@view(res[:, idx, 1]), @view(record.data[record.sequence]), len)
 
         @inbounds @simd for i in record.sequence
-            record.data[i] = 0x3 - record.data[i]
+            record.data[i] == 0x4 || (record.data[i] = 0x3 - record.data[i]) 
         end
         count_freq!(@view(res[:, idx, 2]), @view(record.data[record.sequence |> reverse]), len)
 
@@ -62,7 +69,7 @@ end
 
 function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
     batch_size = 100
-    map = zeros(UInt8, 127)
+    map = fill(0x4, 127)
     map[['A', 'G', 'C', 'T'] .|> UInt8] .= [0x0, 0x1, 0x2, 0x3] 
     map[['a', 'g', 'c', 't'] .|> UInt8] .= [0x0, 0x1, 0x2, 0x3] 
 

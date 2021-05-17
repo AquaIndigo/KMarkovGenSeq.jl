@@ -22,8 +22,9 @@ function main()
     gt_cls = ground_truth_classification()
     len = gt_cls |> length
     best_k, best_acc = 0, 0
+    des = String[]
     for k in 3:7
-        _, pred_cls, _ = query_freq("data/test.fa", "data/genomes", k, "res.txt", false)
+        _, pred_cls, des = query_freq("data/test.fa", "data/genomes", k, "res.txt", false)
         acc = sum(gt_cls[i] == pred_cls[i] for i in 1:len)
         if acc > best_acc
             best_acc = acc
@@ -31,6 +32,7 @@ function main()
         end
     end
     println("The best k is $best_k with accuracy ", best_acc / len)
+    @show des
 end
 
 main()
