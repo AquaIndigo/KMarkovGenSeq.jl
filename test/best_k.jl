@@ -37,5 +37,3 @@ function main()
 end
 
 main()
-
-print()

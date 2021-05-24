@@ -92,6 +92,8 @@ function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
     io = !isnothing(out_file) ? open(joinpath("output/", out_file), "w") : nothing
     while !eof(reader)
         cnt = 0
+        # VERY IMPORTANT INITIALIZE!!!
+        fill!(query_freqs_h, 0.0)
         @sync for idx in 1:batch_size
             eof(reader) && break
 
@@ -121,7 +123,6 @@ function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
                 println(io, i + total_query, "\t", descriptions[argmin_score[i][2]])
             end
         end
-        query_freqs_h .= 0.0
         total_query += cnt
     end
     !isnothing(io) && close(io)
