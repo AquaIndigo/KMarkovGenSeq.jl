@@ -37,3 +37,14 @@ function main()
 end
 
 main()
+
+"""
+[ Info: k = 3, accuracy = 0.60725
+[ Info: k = 4, accuracy = 0.63815
+[ Info: k = 5, accuracy = 0.65865
+[ Info: k = 6, accuracy = 0.68475
+[ Info: k = 7, accuracy = 0.7535
+[ Info: k = 8, accuracy = 0.8921
+[ Info: k = 9, accuracy = 0.9837
+The best k is 9 with accuracy 0.9837
+"""

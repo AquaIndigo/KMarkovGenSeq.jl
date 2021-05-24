@@ -45,11 +45,9 @@ function db_freq(dbseqs, len)
 
         Threads.@spawn begin
             count_freq!(@view(res[:, idx, 1]), @view(record.data[record.sequence]), len)
-
             @simd for i in record.sequence
                 record.data[i] == 0x4 || (record.data[i] = 0x3 - record.data[i]) 
             end
-    
             count_freq!(@view(res[:, idx, 2]), @view(record.data[record.sequence |> reverse]), len)        
         end
 
