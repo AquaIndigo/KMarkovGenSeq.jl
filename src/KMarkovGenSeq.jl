@@ -34,33 +34,34 @@ function db_freq(dbseqs, len)
     res = zeros(Float32, 4 ^ (len + 1), length(dbseqs), 2)
 
     descriptions = String[] #empty array
-
-    @inbounds for (idx, dbseq) in dbseqs |> enumerate
+    @sync @inbounds for (idx, dbseq) in dbseqs |> enumerate
         reader = open(FASTA.Reader, dbseq) #read one db seq
         record = FASTA.Record()
         read!(reader, record)
         (description(record) !== nothing) && push!(descriptions, description(record)) #store the descriptions
-        @inbounds @simd for i in record.sequence
+        @simd for i in record.sequence
             record.data[i] = map[record.data[i]]
         end
-        
-        count_freq!(@view(res[:, idx, 1]), @view(record.data[record.sequence]), len)
 
-        @inbounds @simd for i in record.sequence
-            record.data[i] == 0x4 || (record.data[i] = 0x3 - record.data[i]) 
-        end
-        count_freq!(@view(res[:, idx, 2]), @view(record.data[record.sequence |> reverse]), len)
+        Threads.@spawn begin
+            count_freq!(@view(res[:, idx, 1]), @view(record.data[record.sequence]), len)
 
-        for i in 1:4:4^(len + 1) # calculate the P(Oi | O_{i+1}) = F(O)
-            res[i:i+3, idx, 1] ./= sum(@view(res[i:i+3, idx, 1])) # if all 0, gives NaN
-        end
-
-        for i in 1:4:4^(len + 1) # calculate the P(Oi | O_{i+1}) = F(O)
-            res[i:i+3, idx, 2] ./= sum(@view(res[i:i+3, idx, 1])) # if all 0, gives NaN
+            @simd for i in record.sequence
+                record.data[i] == 0x4 || (record.data[i] = 0x3 - record.data[i]) 
+            end
+    
+            count_freq!(@view(res[:, idx, 2]), @view(record.data[record.sequence |> reverse]), len)        
         end
 
         close(reader)
     end
+    @inbounds Threads.@threads for idx in 1:length(dbseqs)
+        for i in 1:4:4^(len + 1) # calculate the P(Oi | O_{i+1}) = F(O)
+            res[i:i+3, idx, 1] ./= sum(@view(res[i:i+3, idx, 1])) # if all 0, gives NaN
+            res[i:i+3, idx, 2] ./= sum(@view(res[i:i+3, idx, 2]))
+        end
+    end
+
     res .= .-log.(res) # if 0, gives -inf; if NaN, gives NaN
     res[isnan.(res)] .= 10 # treat inf and NaN as 10
     res[isinf.(res)] .= 10 
@@ -74,15 +75,14 @@ function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
     map[['a', 'g', 'c', 't'] .|> UInt8] .= [0x0, 0x1, 0x2, 0x3] 
 
     query_freqs_h = zeros(Float32, 4 ^ (len + 1), batch_size)
-    query_freqs_d = use_gpu ? CUDA.zeros(Float32, 4 ^ (len + 1), batch_size) : nothing
+    query_freqs_d = use_gpu ? CUDA.cu(query_freqs_h) : nothing
     
     dbseqs = dbseq_dir * "/" .* readdir(dbseq_dir)
     descriptions, db_freq_h = db_freq(dbseqs, len)
-    db_freq_d = use_gpu ? CUDA.similar(db_freq_h) : nothing
-    use_gpu && copyto!(db_freq_d, db_freq_h)
+    db_freq_d = use_gpu ? CUDA.cu(db_freq_h) : nothing
 
     product_h = zeros(Float32, batch_size, length(dbseqs), 2)
-    product_d = use_gpu ? CUDA.zeros(Float32, batch_size, length(dbseqs), 2) : nothing
+    product_d = use_gpu ? CUDA.cu(product_h) : nothing
 
     reader = open(FASTA.Reader, query_seqs)
 
@@ -92,7 +92,7 @@ function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
     io = !isnothing(out_file) ? open(joinpath("output/", out_file), "w") : nothing
     while !eof(reader)
         cnt = 0
-        for idx in 1:batch_size
+        @sync for idx in 1:batch_size
             eof(reader) && break
 
             record = FASTA.Record()
@@ -100,23 +100,19 @@ function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
             @inbounds @simd for i in record.sequence
                 record.data[i] = map[record.data[i]]
             end
-
-            count_freq!(@view(query_freqs_h[:, idx]), @view(record.data[record.sequence]), len)
+            Threads.@spawn count_freq!(@view(query_freqs_h[:, idx]), @view(record.data[record.sequence]), len)
             cnt += 1
         end
-
         if db_freq_d !== nothing
             copyto!(query_freqs_d, query_freqs_h)
-            cu_mat_mul!(@view(product_d[:, :, 1]), query_freqs_d, @view(db_freq_d[:, :, 1]));
-            cu_mat_mul!(@view(product_d[:, :, 2]), query_freqs_d, @view(db_freq_d[:, :, 2]));
-    
+            cu_mat_mul!(@view(product_d[:, :, 1]), query_freqs_d, @view(db_freq_d[:, :, 1]))
+            cu_mat_mul!(@view(product_d[:, :, 2]), query_freqs_d, @view(db_freq_d[:, :, 2]))
             copyto!(product_h, product_d)
         else
             mul!(@view(product_h[:, :, 1]), query_freqs_h', @view(db_freq_h[:, :, 1]))
             mul!(@view(product_h[:, :, 2]), query_freqs_h', @view(db_freq_h[:, :, 2]))
         end
 
-        # argmin_score = argmin(@view(product_h[:, :, 1:1]), dims=(2, 3))
         argmin_score = argmin(product_h, dims=(2, 3))
 
         append!(cls_res, argmin_score[i][2] for i in 1:cnt)
@@ -125,7 +121,7 @@ function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
                 println(io, i + total_query, "\t", descriptions[argmin_score[i][2]])
             end
         end
-        
+        query_freqs_h .= 0.0
         total_query += cnt
     end
     !isnothing(io) && close(io)
@@ -144,7 +140,7 @@ calculate C = A' * B
 dims: m×n = (p×m)'p×n
 """
 function cu_mat_mul!(C::CuMatrix, A::CuMatrix, B::CuMatrix)
-    handle = CUBLAS.cublasCreate()
+    handle = CUBLAS.handle()
     row_A, col_A = size(A)
     row_B, col_B = size(B)
     CUBLAS.cublasSgemm_v2(
