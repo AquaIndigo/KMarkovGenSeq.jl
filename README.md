@@ -31,12 +31,16 @@ julia> query_file = ...# (the seqs you want to query)
 
 julia> db_dir = ...# (the directory containing database seqs)
 
-julia> out_file = ...# (the output file name)
+julia> out_file = ...# the output file name, or just `nothing`
 
-julia> query_freq_cup(query_file, db_dir, 6, out_file)
+julia> use_gpu = ...# use gpu or not
+
+julia> k = ...# the order (an integer from 3 ~ 9, greater than 9 will be likely out of memory)
+
+julia> cnt, pred_cls, des = query_freq(query_file, db_dir, k, out_file, use_gpu) # k-order markov
 ```
 
-Then the output file should in `output/out_file`, if `out_file` is not given,
+Then the output file should in `output/out_file`, if `out_file` is `nothing`,
 no output will be created!
 
 And the function returns the number of sequences queried and 

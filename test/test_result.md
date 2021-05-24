@@ -33,3 +33,41 @@ With sparse array:
 141.280736 seconds (1.41 M allocations: 239.521 MiB, 0.02% gc time)
 148.108550 seconds (5.35 M allocations: 695.861 MiB, 0.07% gc time)
 ```
+
+The questions:
+
+```
+1. 
+
+Total query sequences: 1876
+
+4.
+Number of groups containing at least 1 query sequences: 10
+Number of groups containing at least 5 query sequences: 10
+Number of groups containing at least 10 query sequences: 10
+Number of groups containing at least 50 query sequences: 8
+
+5.
+Baumannia cicadellinicola str. Hc (Homalodisca coagulata), complete genomecontains      298     query sequences
+Psychromonas ingrahamii 37 chromosome, complete genomecontains  22      query sequences
+Sphingomonas wittichii RW1 chromosome, complete genomecontains  81      query sequences
+Roseiflexus castenholzii DSM 13941 chromosome, complete genomecontains  375     query sequences
+Hydrogenobaculum sp. Y04AAS1 chromosome, complete genomecontains        104     query sequences
+Alteromonas macleodii str. 'Deep ecotype' chromosome, complete genomecontains   279     query sequences
+Denitrovibrio acetiphilus DSM 12809 chromosome, complete genomecontains 111     query sequences
+Frankia symbiont of Datisca glomerata chromosome, complete genomecontains       23      query sequences
+Candidatus Midichloria mitochondrii IricVA chromosome, complete genomecontains  348     query sequences
+Corynebacterium variabile DSM 44702 chromosome, complete genomecontains 235     query sequences
+
+counter = [298, 22, 81, 375, 104, 279, 111, 23, 348, 235]
+
+6.
+[ Info: k = 3, accuracy = 0.60725
+[ Info: k = 4, accuracy = 0.63815
+[ Info: k = 5, accuracy = 0.65865
+[ Info: k = 6, accuracy = 0.68475
+[ Info: k = 7, accuracy = 0.7535
+[ Info: k = 8, accuracy = 0.8921
+[ Info: k = 9, accuracy = 0.9837
+The best k is 9 with accuracy 0.9837
+```
