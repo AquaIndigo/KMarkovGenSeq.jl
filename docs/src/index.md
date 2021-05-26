@@ -4,8 +4,8 @@ CurrentModule = KMarkovGenSeq
 
 # KMarkovGenSeq
 
-- See our report in [Report](https://AquaIndigo.github.io/KMarkovGenSeq.jl/dev/Report)
-- See the performance and benchmark test in [Tests](https://AquaIndigo.github.io/KMarkovGenSeq.jl/dev/Tests)
+- See our report in [Report](https://aquaindigo.github.io/KMarkovGenSeq.jl/dev/report/)
+- See the performance and benchmark test in [Tests](https://aquaindigo.github.io/KMarkovGenSeq.jl/dev/tests/)
 
 ## APIs
 
