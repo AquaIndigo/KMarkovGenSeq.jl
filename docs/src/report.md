@@ -1,6 +1,7 @@
 ## Method
 
 We use integers $A=0, G=1, C=2, T=3$ to represent each possible sequence, $N_1N_2\ldots N_k$, of length $k$ as an integer $n=\sum_1^k int(N_i)^{k+1-i}$ ranging from 0 to $4^{k}-1$. A state in the Markov model is defined as an oligonucleotide of length $k$, and each state connects to 4 other states ($({k-1})\text{mer}+A/G/C/T$). The previous state shares $k-1$ bases with the next state. Therefore, there are $4^{k+1}$ transitions in total. A genomic sequence under the $k$ th-order Markov model can be viewed as a sequence of state-transitions. The transition probabilities can be calculated for each genome in the training data set according to its Markov model as following:
+
 $$
 kMM_{i, mn}=P_{i}\left(O_{m}\rightarrow O_{n}\right)=\frac{F_{i}\left(O_{m}\rightarrow O_{n}\right)}{F_{i}\left(O_{m}\right)}=\sum_{b \in \{\text{A,G,C,T}\}}\frac{F_{i}\left(O_{m}\rightarrow O_{n}\right)}{F_{i}\left(O_{m}\rightarrow O_b\right)}
 $$
@@ -8,6 +9,7 @@ $$
 where $O_m$ and $O_n$ are oligonucleotides of length $k$. If $O_n$ is ended with base $b$, we can also denote it as $O_b$. $P_{i}\left(O_{m}\rightarrow O_{n}\right)$ represents the transition probability from $O_m$ to $O_n$, $F_{i}\left(O_{m}\rightarrow O_{n}\right)$ represents observed count of transitions from $O_m$ to $O_n$ in a genomic sequence $i$ and $F(O_m)$ is the observed count of $O_m$. Since $F_{i}\left(O_{m}\right) = \sum_{b \in \{\text{A,G,C,T}\}}F_{i}\left(O_{m}\rightarrow O_b\right)$, we can get the result using only the counts of $(k+1)$mers and there's no need for us to recount $k$ mers. A $4^{k+1}$ dimension vector is created to represent each genome.  Because we have to evaluate the transformation from $k$ mer to the next base, a sequence of $k+1$ length is needed to be counted and recorded. We have to initialize a count vector with the length of $4^{k+1}$. In practice, the minus logarithm value of each transition probability is saved.
 
 We read the sequence and count the transition states along the way, using sliding windows to improve the efficiency. A short sequence of length $l$ can be considered as $l-k$ transitions and a score $S_i$ , which represents the distance between the short sequence and a genome $i$, can be computed as following:
+
 $$
 \begin{align}
 S_{i} &=-\sum_{j=0}^{l-k-1} \ln \left(P_{i}\left(O_{j} \rightarrow O_{j+1}\right)\right)\\
@@ -15,9 +17,10 @@ S_{i} &=-\sum_{j=0}^{l-k-1} \ln \left(P_{i}\left(O_{j} \rightarrow O_{j+1}\right
 &=-\sum_{mn\in (k+1)mer}f_i(O_m\rightarrow O_n)\ln(\sum_{b \in \{\text{A,G,C,T}\}}\frac{F_{i}\left(O_{m}\rightarrow O_{n}\right)}{F_{i}\left(O_{m}\rightarrow O_b\right)})
 \end{align}
 $$
+
 where $O_j$ and $O_{j+1}$ are two oligonucleotides of length $k$, and $mn$ is $O_m$ and $O_n$ combined with the length of $k+1$, and $P_{i}(O_{j} \rightarrow O_{j+1})$ is the transition probability from $O_j$ to $O_{j+1}$ observed in the $i$-th genome. $F_{i}\left(O_{m}\rightarrow O_{n}\right)$ represents observed count of transitions from $O_m$ to $O_n$ in a genomic sequence $i$ and $f_{i}\left(O_{m}\rightarrow O_{n}\right)$ is that in a query sequence. When the transition from $O_j$ to $O_{j+1}$ does not exist in the $i$-th genome, the logarithm value of the transition probability will be set to a constant (default is 10). For each sequence, a genome in the database with the minimum score is selected as the source genome. At the end, each sequence will be annotated with the taxonomy information of its source genome. $S_i$ can be calculated by the group of $4^{k+1}$ categories of transition state, which enables that the counts of transition states in query sequence (denoted by a vector of $4^{k+1}$ length for each query sequence and a matrix $A$ of $z \times 4^{k+1}$ scale for all $z$ queries) and transition probabilities in the genome database (denoted by a vector of $4^{k+1}$ length for each genome database and a matrix $B$ of $2w \times 4^{k+1}$ scale for all $w$ databases, considering the reversed sequences) can be calculated respectively. The score can be calculated by $A*B^T$ and a scoring matix with a scale of $z\times 2w$ will return. Choose the best score in $2w$ scores of each query sequences, and the corresponding database can be the best-hit result.
 
-<img src="https://raw.githubusercontent.com/AquaIndigo/KMarkovGenSeq.jl/master/docs/src/assets/image-20210517103144335.png" alt="image-20210517103144335" style="zoom:50%;" />
+![best-hit](src="https://raw.githubusercontent.com/AquaIndigo/KMarkovGenSeq.jl/master/docs/src/assets/image-20210517103144335.png")
 
 The algorithm complexity is determined by the number of genomes in the database and the order of Markov Models. It can be defined as follows: 
 $$
@@ -136,7 +139,7 @@ $ grep '>' /home/faculty/ccwei/courses/2021/pab/proj1/reads.fa | wc -l
   |     Frankia      |  23  |
   |   Psychromonas   |  22  |
 
-  <img src="https://raw.githubusercontent.com/AquaIndigo/KMarkovGenSeq.jl/master/docs/src/assets/image-20210524202132318.png" alt="image-20210524202132318" style="zoom:67%;" />
+![frequency]("https://raw.githubusercontent.com/AquaIndigo/KMarkovGenSeq.jl/master/docs/src/assets/image-20210524202132318.png")
 
 6. For k=3-9, which k value gives the best classification result? Please give your own criteria for “good” result, and explain why this k value gives the best result. 
 
