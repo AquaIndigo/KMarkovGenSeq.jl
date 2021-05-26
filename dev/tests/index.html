@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Tests · KMarkovGenSeq.jl</title><link rel="canonical" href="https://aquaIndigo.github.io/KMarkovGenSeq.jl/tests/"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">KMarkovGenSeq.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../report/">Report</a></li><li class="is-active"><a class="tocitem" href>Tests</a><ul class="internal"><li><a class="tocitem" href="#Benchmark"><span>Benchmark</span></a></li><li><a class="tocitem" href="#Questions"><span>Questions</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Tests</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Tests</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/AquaIndigo/KMarkovGenSeq.jl/blob/master/docs/src/tests.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h2 id="Benchmark"><a class="docs-heading-anchor" href="#Benchmark">Benchmark</a><a id="Benchmark-1"></a><a class="docs-heading-anchor-permalink" href="#Benchmark" title="Permalink"></a></h2><pre><code class="language-julia">Using CPU
+
+0.151729 seconds (226.68 k allocations: 76.954 MiB)
+0.192870 seconds (230.42 k allocations: 77.655 MiB)
+0.311679 seconds (245.79 k allocations: 80.482 MiB)
+0.553789 seconds (307.25 k allocations: 91.793 MiB, 4.00% gc time)
+1.901767 seconds (553.01 k allocations: 137.254 MiB)
+5.736246 seconds (1.54 M allocations: 323.395 MiB, 0.32% gc time)
+27.172187 seconds (5.47 M allocations: 1.076 GiB, 0.39% gc time)
+
+Using GPU
+
+0.186823 seconds (268.18 k allocations: 77.272 MiB)
+0.202832 seconds (315.47 k allocations: 78.642 MiB)
+0.368757 seconds (513.61 k allocations: 84.308 MiB, 4.24% gc time)
+0.814391 seconds (612.34 k allocations: 96.138 MiB)
+2.781158 seconds (1.32 M allocations: 148.650 MiB, 0.63% gc time)
+10.318713 seconds (3.99 M allocations: 360.579 MiB, 0.38% gc time)
+38.076606 seconds (19.35 M allocations: 1.283 GiB, 0.22% gc time)</code></pre><p>With sparse array:</p><pre><code class="language-julia">  0.435236 seconds (105.41 k allocations: 67.727 MiB, 1.84% gc time)
+  1.590763 seconds (109.26 k allocations: 70.391 MiB)
+  8.156021 seconds (124.62 k allocations: 77.046 MiB, 0.05% gc time)
+ 49.118710 seconds (186.06 k allocations: 89.670 MiB, 0.01% gc time)
+104.519134 seconds (431.82 k allocations: 128.380 MiB)
+141.280736 seconds (1.41 M allocations: 239.521 MiB, 0.02% gc time)
+148.108550 seconds (5.35 M allocations: 695.861 MiB, 0.07% gc time)</code></pre><h2 id="Questions"><a class="docs-heading-anchor" href="#Questions">Questions</a><a id="Questions-1"></a><a class="docs-heading-anchor-permalink" href="#Questions" title="Permalink"></a></h2><pre><code class="language-none">1. 
+
+Total query sequences: 1876
+
+4.
+Number of groups containing at least 1 query sequences: 10
+Number of groups containing at least 5 query sequences: 10
+Number of groups containing at least 10 query sequences: 10
+Number of groups containing at least 50 query sequences: 8
+
+5.
+Baumannia cicadellinicola str. Hc (Homalodisca coagulata), complete genomecontains      298     query sequences
+Psychromonas ingrahamii 37 chromosome, complete genomecontains  22      query sequences
+Sphingomonas wittichii RW1 chromosome, complete genomecontains  81      query sequences
+Roseiflexus castenholzii DSM 13941 chromosome, complete genomecontains  375     query sequences
+Hydrogenobaculum sp. Y04AAS1 chromosome, complete genomecontains        104     query sequences
+Alteromonas macleodii str. &#39;Deep ecotype&#39; chromosome, complete genomecontains   279     query sequences
+Denitrovibrio acetiphilus DSM 12809 chromosome, complete genomecontains 111     query sequences
+Frankia symbiont of Datisca glomerata chromosome, complete genomecontains       23      query sequences
+Candidatus Midichloria mitochondrii IricVA chromosome, complete genomecontains  348     query sequences
+Corynebacterium variabile DSM 44702 chromosome, complete genomecontains 235     query sequences
+
+counter = [298, 22, 81, 375, 104, 279, 111, 23, 348, 235]
+
+6.
+[ Info: k = 3, accuracy = 0.60725
+[ Info: k = 4, accuracy = 0.63815
+[ Info: k = 5, accuracy = 0.65865
+[ Info: k = 6, accuracy = 0.68475
+[ Info: k = 7, accuracy = 0.7535
+[ Info: k = 8, accuracy = 0.8921
+[ Info: k = 9, accuracy = 0.9837
+The best k is 9 with accuracy 0.9837</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../report/">« Report</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 26 May 2021 14:28">Wednesday 26 May 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
