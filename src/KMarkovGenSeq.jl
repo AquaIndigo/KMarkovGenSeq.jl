@@ -161,10 +161,11 @@ end
 """
 Wrapper of cuda lib functon cublasSgemm_v2 to do matrix multiplication.
 
-Calculate C = A' * B
+Calculate C = A' ⋅ B
 
 dims: m×n = (p×m)'p×n
 """
+
 function cu_mat_mul!(C::CuMatrix, A::CuMatrix, B::CuMatrix)
     handle = CUBLAS.handle()
     row_A, col_A = size(A)
