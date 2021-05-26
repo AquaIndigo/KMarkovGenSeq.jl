@@ -1,6 +1,5 @@
 ## Benchmark
 
-
 ```julia
 Using CPU
 
