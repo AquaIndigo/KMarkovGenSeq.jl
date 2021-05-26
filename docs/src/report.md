@@ -20,7 +20,7 @@ $$
 
 where $O_j$ and $O_{j+1}$ are two oligonucleotides of length $k$, and $mn$ is $O_m$ and $O_n$ combined with the length of $k+1$, and $P_{i}(O_{j} \rightarrow O_{j+1})$ is the transition probability from $O_j$ to $O_{j+1}$ observed in the $i$-th genome. $F_{i}\left(O_{m}\rightarrow O_{n}\right)$ represents observed count of transitions from $O_m$ to $O_n$ in a genomic sequence $i$ and $f_{i}\left(O_{m}\rightarrow O_{n}\right)$ is that in a query sequence. When the transition from $O_j$ to $O_{j+1}$ does not exist in the $i$-th genome, the logarithm value of the transition probability will be set to a constant (default is 10). For each sequence, a genome in the database with the minimum score is selected as the source genome. At the end, each sequence will be annotated with the taxonomy information of its source genome. $S_i$ can be calculated by the group of $4^{k+1}$ categories of transition state, which enables that the counts of transition states in query sequence (denoted by a vector of $4^{k+1}$ length for each query sequence and a matrix $A$ of $z \times 4^{k+1}$ scale for all $z$ queries) and transition probabilities in the genome database (denoted by a vector of $4^{k+1}$ length for each genome database and a matrix $B$ of $2w \times 4^{k+1}$ scale for all $w$ databases, considering the reversed sequences) can be calculated respectively. The score can be calculated by $A*B^T$ and a scoring matix with a scale of $z\times 2w$ will return. Choose the best score in $2w$ scores of each query sequences, and the corresponding database can be the best-hit result.
 
-![best-hit](src="https://raw.githubusercontent.com/AquaIndigo/KMarkovGenSeq.jl/master/docs/src/assets/image-20210517103144335.png")
+![best-hit](https://raw.githubusercontent.com/AquaIndigo/KMarkovGenSeq.jl/master/docs/src/assets/image-20210517103144335.png)
 
 The algorithm complexity is determined by the number of genomes in the database and the order of Markov Models. It can be defined as follows: 
 $$
@@ -139,7 +139,7 @@ $ grep '>' /home/faculty/ccwei/courses/2021/pab/proj1/reads.fa | wc -l
   |     Frankia      |  23  |
   |   Psychromonas   |  22  |
 
-![frequency]("https://raw.githubusercontent.com/AquaIndigo/KMarkovGenSeq.jl/master/docs/src/assets/image-20210524202132318.png")
+![frequency](https://raw.githubusercontent.com/AquaIndigo/KMarkovGenSeq.jl/master/docs/src/assets/image-20210524202132318.png)
 
 6. For k=3-9, which k value gives the best classification result? Please give your own criteria for “good” result, and explain why this k value gives the best result. 
 
