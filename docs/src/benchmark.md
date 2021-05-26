@@ -34,7 +34,7 @@ With sparse array:
 148.108550 seconds (5.35 M allocations: 695.861 MiB, 0.07% gc time)
 ```
 
-The questions:
+## Questions
 
 ```
 1. 

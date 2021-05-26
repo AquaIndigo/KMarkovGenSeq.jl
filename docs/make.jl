@@ -10,7 +10,7 @@ makedocs(;
     sitename="KMarkovGenSeq.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://AquaIndigo.github.io/KMarkovGenSeq.jl",
+        canonical="https://aquaIndigo.github.io/KMarkovGenSeq.jl",
         assets=String[],
     ),
     pages=[
