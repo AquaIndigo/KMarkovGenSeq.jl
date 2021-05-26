@@ -87,8 +87,7 @@ Args:
 - `query_seqs`: the file containing the query sequences
 - `dbseqs`: the forlder of the database sequences
 - `len`: do K-Markov algo with K = `len`
-- `out_file`: the output file to give the predictions, default is `nothing` and
-no file will be given
+- `out_file`: the output file to give the predictions, default is `nothing` and no file will be given
 - `use_gpu`: whether to use gpu
 """
 function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
