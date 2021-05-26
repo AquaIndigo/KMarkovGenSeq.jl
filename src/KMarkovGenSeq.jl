@@ -27,6 +27,19 @@ function count_freq!(cnt::AbstractVector, seq::AbstractVector{UInt8}, len)
     end
 end
 
+"""
+Process the counts of each k-strr in several database 
+sequences. And the -log frequency will be given for the origin
+sequences and their reverse complementary sequences.
+
+The first value to return is the descriptions of every database 
+sequences. The second is the -log frequencies.
+
+Args:
+
+- dbseqs: the forlder of the database sequences
+- len: do K-Markov algo with K = `len`
+"""
 function db_freq(dbseqs, len)
     map = fill(0x4, 127)
     map[['A', 'G', 'C', 'T'] .|> UInt8] .= [0x0, 0x1, 0x2, 0x3] 
@@ -66,6 +79,18 @@ function db_freq(dbseqs, len)
     descriptions, res
 end
 
+"""
+Perform K-Markov algorithm to predict where sequences come from.
+
+Args:
+
+- query_seqs: the file containing the query sequences
+- dbseqs: the forlder of the database sequences
+- len: do K-Markov algo with K = `len`
+- out_file: the output file to give the predictions, default is `nothing` and
+no file will be given
+- use_gpu: whether to use gpu
+"""
 function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
     batch_size = 100
     map = fill(0x4, 127)
@@ -135,7 +160,10 @@ function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
 end
 
 """
-calculate C = A' * B
+Wrapper of cuda lib functon cublasSgemm_v2 to do matrix multiplication.
+
+Calculate C = A' * B
+
 dims: m×n = (p×m)'p×n
 """
 function cu_mat_mul!(C::CuMatrix, A::CuMatrix, B::CuMatrix)
