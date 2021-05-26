@@ -37,8 +37,8 @@ sequences. The second is the -log frequencies.
 
 Args:
 
-- dbseqs: the forlder of the database sequences
-- len: do K-Markov algo with K = `len`
+- `dbseqs`: the forlder of the database sequences
+- `len`: do K-Markov algo with K = `len`
 """
 function db_freq(dbseqs, len)
     map = fill(0x4, 127)
@@ -84,12 +84,12 @@ Perform K-Markov algorithm to predict where sequences come from.
 
 Args:
 
-- query_seqs: the file containing the query sequences
-- dbseqs: the forlder of the database sequences
-- len: do K-Markov algo with K = `len`
-- out_file: the output file to give the predictions, default is `nothing` and
+- `query_seqs`: the file containing the query sequences
+- `dbseqs`: the forlder of the database sequences
+- `len`: do K-Markov algo with K = `len`
+- `out_file`: the output file to give the predictions, default is `nothing` and
 no file will be given
-- use_gpu: whether to use gpu
+- `use_gpu`: whether to use gpu
 """
 function query_freq(query_seqs, dbseq_dir, len, out_file=nothing, use_gpu=false)
     batch_size = 100
