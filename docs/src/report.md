@@ -1,3 +1,7 @@
+<script type="text/javascript"
+src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
 ## Method
 
 We use integers $A=0, G=1, C=2, T=3$ to represent each possible sequence, $N_1N_2\ldots N_k$, of length $k$ as an integer $n=\sum_1^k int(N_i)^{k+1-i}$ ranging from 0 to $4^{k}-1$. A state in the Markov model is defined as an oligonucleotide of length $k$, and each state connects to 4 other states ($({k-1})\text{mer}+A/G/C/T$). The previous state shares $k-1$ bases with the next state. Therefore, there are $4^{k+1}$ transitions in total. A genomic sequence under the $k$ th-order Markov model can be viewed as a sequence of state-transitions. The transition probabilities can be calculated for each genome in the training data set according to its Markov model as following:
