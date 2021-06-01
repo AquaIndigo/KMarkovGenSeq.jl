@@ -5,6 +5,9 @@
 [![Build Status](https://github.com/AquaIndigo/KMarkovGenSeq.jl/workflows/CI/badge.svg)](https://github.com/AquaIndigo/KMarkovGenSeq.jl/actions)
 [![Coverage](https://codecov.io/gh/AquaIndigo/KMarkovGenSeq.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/AquaIndigo/KMarkovGenSeq.jl)
 
+## Documentation
+[**Documentation**](https://AquaIndigo.github.io/KMarkovGenSeq.jl/dev/)
+
 ## Usage
 
 You should run the package with a Julia at version 1.6
